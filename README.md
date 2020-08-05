@@ -10,7 +10,6 @@ Built on top of existing open source projects:
 - [Gin Web Framework](https://github.com/gin-gonic/gin)
 - [Zap Logging](https://github.com/uber-go/zap)
 - [JWT Go](https://github.com/dgrijalva/jwt-go)
-- [Go Swaggo](https://github.com/swaggo/swag) OpenAPI2.0 specification
 
 ## Features
 
@@ -588,7 +587,7 @@ Please read `CONTRIBUTING.md` for details on our code of conduct, and the proces
 
 # Versioning
 
-
+Current version is initial release - v1.0.0
 
 # Authors
 
@@ -597,10 +596,6 @@ Please read `CONTRIBUTING.md` for details on our code of conduct, and the proces
 # License
 
 This project is licensed under Apache 2.0 License - see the `LICENSE` for details.
-
-# Acknowledgments
-
-
 
 
 
