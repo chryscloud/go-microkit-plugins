@@ -28,6 +28,10 @@ The framework is built with `modularity`, `reusability`, `extensibility` and `de
 ## Getting Started
 
 * [Quick Start](#quick-start)
+* [Authenticaton](#authentication)
+* [Configuration](#configuration)
+	* [Extending Configuration](extending-configuration)
+* [Setup Logging](#logging)
 
 ## Quick Start
 
@@ -158,15 +162,16 @@ Expected output:
 {"message":"pong at 20200804203903"}
 ```
 
-## Logging plugin
+## Authentication
+
+TBD
+
+## Logging
 
 Logging implements tagged style logging with [Ubers zap logger](https://github.com/uber-go/zap)
 
-The output of the logger is in JSON format, adapted to fluentd logging requirements. 
+The output of the logger is in JSON format, adapted to fluentd logging requirements (stackdriver logging on Google or customizable to work on AWS EKS)
 
-```
-/logging
-```
 
 Tagged style logging methods
 ```go
@@ -177,4 +182,75 @@ func (z *ZapLogger) Info(keyvals ...interface{})
 
 Error function extracts golang style stacktrace.
 
-Zap logging plugin with custom output JSON format suitable for fluentd logging
+Example to init logging into `stdout`:
+```go
+import (
+	mclog "github.com/chryscloud/go-microkit-plugins/log"
+)
+
+...
+
+log, err := mclog.NewZapLogger("info")
+```
+
+Compatible example with Google GKE logging:
+```go
+import (
+	mclog "github.com/chryscloud/go-microkit-plugins/log"
+)
+
+...
+
+log, err := mclog.NewEntry2ZapLogger("nameofmyservice")
+```
+
+## Configuration
+
+Example configuration:
+
+```yaml
+version: 1.0
+port: 8080
+title: Go Micro kit service framework
+description: Go Micro kit service framework
+swagger: true
+mode: debug # "debug": or "release"
+auth_token:
+  enabled: false
+  header: "authkey"
+  token: "abc"
+
+jwt_token:
+  enabled: false
+  secret_key: "abcedf"
+  cookie_name: "mycookie"
+
+# extended custom config
+test_endpoint: "this is test"
+```
+
+Loading default configuration:
+```go
+var conf cfg.YamlConfig
+err := cfg.NewYamlConfig("/path/to/conf.yaml", &conf)
+```
+
+### Extending configuration
+
+To extend default configuration define your own structure:
+```go
+var conf Config
+
+type Config struct {
+	cfg.YamlConfig 	`yaml:",inline"`
+	TestEndpoint 	`yaml:"test_endpoint"`
+}
+
+// in your main.go file load extended configuration
+ 
+err := cfg.NewYamlConfig("/path/to/conf.yaml", &Conf)
+if err != nil {
+	Log.Error(err, "conf.yaml failed to load")
+	panic("Failed to load conf.yaml")
+}
+```
