@@ -598,4 +598,8 @@ Current version is initial release - v1.0.0
 This project is licensed under Apache 2.0 License - see the `LICENSE` for details.
 
 
+# Acknowledgments
 
+<p align="center">
+    <img src="https://storage.googleapis.com/chrysaliswebassets/logo_small.png" title="Chrysalis Cloud" />
+<p align="center">
