@@ -1,0 +1,18 @@
+version: 1.0
+port: 8080
+title: Go Micro kit service framework
+description: Go Micro kit service framework
+swagger: true
+mode: debug # "debug": or "release"
+auth_token:
+  enabled: false
+  header: "authkey"
+  token: "abc"
+
+jwt_token:
+  enabled: false
+  secret_key: "abcedf"
+  cookie_name: "mycookie"
+
+# extended custom config
+test_endpoint: "this is test"
