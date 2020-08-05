@@ -1,5 +1,7 @@
 # go-microkit-plugins
 
+[![](https://godoc.org/github.com/chryscloud/go-microkit-plugins?status.svg)](https://godoc.org/github.com/chryscloud/go-microkit-plugins)
+
 ## Introduction
 
 Microkit Plugins is a set of backend GO libraries unifying development across multiple distributed microservices. It contains set of best practices and simple reusable modules most commonly used with RESTful microservices.
@@ -558,26 +560,26 @@ cl := docker.NewSocketClient(docker.Log(g.Log), docker.Host("unix:///var/run/doc
 Available docker methods:
 ```go
 ContainersList() ([]types.Container, error)
-	ContainersListWithOptions(opts types.ContainerListOptions) ([]types.Container, error)
-	ContainerLogs(containerID string, tailNumberLines int, sinceTimestamp time.Time) (*models.DockerLogs, error)
+ContainersListWithOptions(opts types.ContainerListOptions) ([]types.Container, error)
+ContainerLogs(containerID string, tailNumberLines int, sinceTimestamp time.Time) (*models.DockerLogs, error)
 
-	// ContainerLogsStream streams logs to output channel until done is received. User is responsible to close the passed in channel
-	ContainerLogsStream(containerID string, output chan []byte, done chan bool) error
+// ContainerLogsStream streams logs to output channel until done is received. User is responsible to close the passed in channel
+ContainerLogsStream(containerID string, output chan []byte, done chan bool) error
 
-	// Container CRUD operations
-	ContainerCreate(name string, config *container.Config, hostConfig *container.HostConfig, networkConfig *network.NetworkingConfig) (*container.ContainerCreateCreatedBody, error)
-	ContainerStart(containerID string) error
-	ContainerRestart(containerID string, waitForRestartLimit time.Duration) error
-	ContainersPrune(pruneFilter filters.Args) (*types.ContainersPruneReport, error)
-	ContainerStop(containerID string, killAfterTimeout *time.Duration) error
-	ContainerGet(containerID string) (*types.ContainerJSON, error)
-	ContainerStats(containerID string) (*types.StatsJSON, error)
-	ImagesList() ([]types.ImageSummary, error)
-	ImagePullDockerHub(image, tag string, username, password string) (string, error)
-	ImageRemove(imageID string) ([]types.ImageDelete, error)
-	VolumesPrune(pruneFilter filters.Args) (*types.VolumesPruneReport, error)
-	GetDockerClient() *client.Client
-	CalculateStats(jsonStats *types.StatsJSON) *models.Stats
+// Container CRUD operations
+ContainerCreate(name string, config *container.Config, hostConfig *container.HostConfig, networkConfig *network.NetworkingConfig) (*container.ContainerCreateCreatedBody, error)
+ContainerStart(containerID string) error
+ContainerRestart(containerID string, waitForRestartLimit time.Duration) error
+ContainersPrune(pruneFilter filters.Args) (*types.ContainersPruneReport, error)
+ContainerStop(containerID string, killAfterTimeout *time.Duration) error
+ContainerGet(containerID string) (*types.ContainerJSON, error)
+ContainerStats(containerID string) (*types.StatsJSON, error)
+ImagesList() ([]types.ImageSummary, error)
+ImagePullDockerHub(image, tag string, username, password string) (string, error)
+ImageRemove(imageID string) ([]types.ImageDelete, error)
+VolumesPrune(pruneFilter filters.Args) (*types.VolumesPruneReport, error)
+GetDockerClient() *client.Client
+CalculateStats(jsonStats *types.StatsJSON) *models.Stats
 ```
 
 # Contributing
