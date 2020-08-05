@@ -150,11 +150,6 @@ Run:
 go run main.go
 ```
 
-TOD: Run Swaggo command to generate swagger docs:
-```bash
-TBD
-```
-
 Visit: `http://localhost:8080`
 
 Expected output:
