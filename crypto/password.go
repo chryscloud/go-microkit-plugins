@@ -15,10 +15,8 @@
 package crypto
 
 import (
-	"crypto/hmac"
 	"crypto/rand"
 	"encoding/hex"
-	"hash"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -47,27 +45,4 @@ func GenerateSecretKey(numBytes int) (string, error) {
 	hex.Encode(dst, key)
 
 	return string(dst), nil
-}
-
-func ComputeHmac256(hashFunc func() hash.Hash, message string, secret string) string {
-	key := []byte(secret)
-	h := hmac.New(hashFunc, key)
-	h.Write([]byte(message))
-	return hex.EncodeToString(h.Sum(nil))
-}
-
-// ValidateHMac256Signature validates signature from a sent payload
-// Bash example creating signature: apisig=`echo -n "$nonce$key" | openssl dgst -sha256 -hmac "mysecret" -binary | xxd -p -c 256`
-func ValidateHmac256Signature(hashFunc func() hash.Hash, payload string, secret string, hexDigest string) bool {
-	hHash := hmac.New(hashFunc, []byte(secret))
-	_, _ = hHash.Write([]byte(payload)) // assignations are required not to get an errcheck issue (linter)
-	computedDigest := hHash.Sum(nil)
-
-	digest, err := hex.DecodeString(hexDigest)
-	if err != nil {
-		return false
-	}
-
-	return hmac.Equal(computedDigest, digest)
-
 }

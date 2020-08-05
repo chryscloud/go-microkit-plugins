@@ -8,6 +8,7 @@ auth_token:
   enabled: false
   header: "authkey"
   token: "abc"
+  path: /api/v1/micro/*
 
 jwt_token:
   enabled: false

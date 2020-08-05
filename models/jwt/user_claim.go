@@ -12,28 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package crypto
+package jwt
 
-import (
-	"testing"
-)
+import "github.com/dgrijalva/jwt-go"
 
-func TestPasswordHash(t *testing.T) {
-	pass, err := HashPassword("this is my password")
-	if err != nil {
-		t.Fatal(err)
-	}
-	ok := CheckPasswordHash("this is my password", pass)
-	if !ok {
-		t.Fatalf("password should check oout ok")
-	}
-}
-
-func BenchmarkBcrypt(b *testing.B) {
-	b.StopTimer()
-	pass, _ := HashPassword("this is test")
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		CheckPasswordHash(pass, "this is test")
-	}
+// UserClaim for JWT user within the context
+type UserClaim struct {
+	ID      string   `json:"id"`
+	Roles   []string `json:"Roles,omitempty"`
+	Enabled bool     `json:"enabled"`
+	jwt.StandardClaims
 }

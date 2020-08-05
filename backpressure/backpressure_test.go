@@ -66,7 +66,7 @@ func TestBackpressure(t *testing.T) {
 	}
 	defer bckPress.Close()
 
-	numEventsToSend := 15000 // 30K events
+	numEventsToSend := 15000 // 15K events
 
 	numEventsSent := 0
 
