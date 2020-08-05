@@ -8,7 +8,7 @@ Built on top of existing open source projects:
 - [Gin Web Framework](https://github.com/gin-gonic/gin)
 - [Zap Logging](https://github.com/uber-go/zap)
 - [JWT Go](https://github.com/dgrijalva/jwt-go)
-- [Go Swaggo](https://github.com/swaggo/swag)
+- [Go Swaggo](https://github.com/swaggo/swag) OpenAPI2.0 specification
 
 ## Features
 
@@ -38,7 +38,7 @@ version: 1.0
 port: 8080
 title: Go Micro kit service framework
 description: Go Micro kit service framework
-swagger: true
+swagger: false
 mode: debug # "debug": or "release"
 auth_token:
   enabled: false
@@ -148,6 +148,11 @@ func usage() {
 Run:
 ```bash
 go run main.go
+```
+
+TOD: Run Swaggo command to generate swagger docs:
+```bash
+TBD
 ```
 
 Visit: `http://localhost:8080`
