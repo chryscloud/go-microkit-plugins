@@ -54,26 +54,33 @@ jwt_token:
 Create main.go for your microservice:
 
 ```go
+package main
+
 import (
-    "net"
+	"flag"
+	"fmt"
 	"net/http"
 	"os"
-    "os/signal"
-    
-    msrv "github.com/myproject/go-microkit-plugins/server"
-    cfg "github.com/chryscloud/go-microkit-plugins/config"
-    mclog "github.com/chryscloud/go-microkit-plugins/log"
+	"os/signal"
+
+	cfg "github.com/chryscloud/go-microkit-plugins/config"
+	"github.com/chryscloud/go-microkit-plugins/endpoints"
+	mclog "github.com/chryscloud/go-microkit-plugins/log"
+	msrv "github.com/chryscloud/go-microkit-plugins/server"
 )
 
 // Log global wide logging
 var Log mclog.Logger
+
 // Conf global config
 var Conf Config
 
+// useful in case we extend the configuration
 type Config struct {
 	cfg.YamlConfig `yaml:",inline"`
 }
 
+// init logging
 func init() {
 	l, err := mclog.NewEntry2ZapLogger("myservice")
 	if err != nil {
@@ -83,7 +90,7 @@ func init() {
 }
 
 func main() {
-    var (
+	var (
 		configFile string
 	)
 	// configuration file optional path. Default:  current dir with  filename conf.yaml
@@ -92,20 +99,28 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
-	// var conf g.Config
+    // init configuration from conf.yaml
 	err := cfg.NewYamlConfig(configFile, &Conf)
 	if err != nil {
-		g.Log.Error(err, "conf.yaml failed to load")
+		Log.Error(err, "conf.yaml failed to load")
 		panic("Failed to load conf.yaml")
-    }
-    
-    // server wait to shutdown monitoring channels
-    done := make(chan bool, 1)
-    quit := make(chan os.Signal, 1)
+	}
 
-    signal.Notify(quit, os.Interrupt)
+	// server wait to shutdown monitoring channels
+	done := make(chan bool, 1)
+	quit := make(chan os.Signal, 1)
 
-    // start server
+	signal.Notify(quit, os.Interrupt)
+
+	// init routing (for endpoints)
+	router := msrv.NewAPIRouter(&Conf.YamlConfig)
+
+	root := router.Group("/")
+	{
+		root.GET("/", endpoints.PingEndpoint)
+	}
+
+	// start server
 	srv := msrv.Start(&Conf.YamlConfig, router, Log)
 	// wait for server shutdown
 	go msrv.Shutdown(srv, Log, quit, done)
@@ -116,8 +131,31 @@ func main() {
 	}
 
 	<-done
-    
 }
+
+// usage will print out the flag options for the server.
+func usage() {
+	usageStr := `Usage: operator [options]
+	Server Options:
+	-c, --config <file>              Configuration file path
+`
+	fmt.Printf("%s\n", usageStr)
+	os.Exit(0)
+}
+
+```
+
+Run:
+```bash
+go run main.go
+```
+
+Visit: `http://localhost:8080`
+
+Expected output:
+```json
+
+{"message":"pong at 20200804203903"}
 ```
 
 ## Logging plugin
