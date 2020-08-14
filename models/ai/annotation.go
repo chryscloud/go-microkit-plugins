@@ -1,7 +1,9 @@
 package ai
 
 type AnnotationList struct {
-	Data []*Annotation `json:"data,omitempty"`
+	Data           []*Annotation `json:"data,omitempty"`
+	HasMore        bool          `json:"has_more,omitempty"`
+	StartTimestamp int64         `json:"start_timestamp,omitempty"`
 }
 
 type Annotation struct {
