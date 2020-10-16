@@ -15,6 +15,7 @@
 package crypto
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -27,6 +28,11 @@ func TestPasswordHash(t *testing.T) {
 	if !ok {
 		t.Fatalf("password should check oout ok")
 	}
+}
+
+func TestGenSecretKey(t *testing.T) {
+	sk, _ := GenerateSecretKey(50)
+	fmt.Printf("Secret key: %v\n", sk)
 }
 
 func BenchmarkBcrypt(b *testing.B) {

@@ -3,20 +3,16 @@ module github.com/chryscloud/go-microkit-plugins
 go 1.13
 
 require (
-	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/blendle/zapdriver v1.3.1
+	github.com/chryscloud/microkit-plugins v0.0.0-20200824191810-84e7409ad039
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v1.13.1
-	github.com/docker/go-connections v0.4.0 // indirect
-	github.com/docker/go-units v0.4.0 // indirect
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-openapi/spec v0.19.9 // indirect
 	github.com/go-openapi/swag v0.19.9 // indirect
-	github.com/golang/protobuf v1.3.5 // indirect
+	github.com/go-resty/resty/v2 v2.3.0
 	github.com/mailru/easyjson v0.7.2 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7 // indirect
 	go.uber.org/zap v1.15.0

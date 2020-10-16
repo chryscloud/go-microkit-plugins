@@ -27,9 +27,6 @@ var (
 	apiVersion  = "1.39"
 	containerID = ""
 
-	// cacert, _  = ioutil.ReadFile("/media/igor/ubuntu/Nextcloud/Documents/Cocooncam/conffiles/cocoon-operator/ca.pem")
-	// certKey, _ = ioutil.ReadFile("/media/igor/ubuntu/Nextcloud/Documents/Cocooncam/conffiles/cocoon-operator/client-key.pem")
-	// cert, _    = ioutil.ReadFile("/media/igor/ubuntu/Nextcloud/Documents/Cocooncam/conffiles/cocoon-operator/client-cert.pem")
 	cacert, _  = ioutil.ReadFile("/media/igor/ubuntu/Nextcloud/Documents/Cocooncam/conffiles/development/docker-keys/docker-ca.pem")
 	certKey, _ = ioutil.ReadFile("/media/igor/ubuntu/Nextcloud/Documents/Cocooncam/conffiles/development/docker-keys/docker-client-key.pem")
 	cert, _    = ioutil.ReadFile("/media/igor/ubuntu/Nextcloud/Documents/Cocooncam/conffiles/development/docker-keys/docker-client-cert.pem")
