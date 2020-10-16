@@ -581,6 +581,24 @@ GetDockerClient() *client.Client
 CalculateStats(jsonStats *types.StatsJSON) *models.Stats
 ```
 
+## Listing all tag versions from DockerHub
+
+Interface
+```go
+type DockerHub interface {
+	Tags(repostiory string) ([]string, error)
+}
+```
+
+Usage:
+```go
+var option Option
+cl := NewClient(option)
+tags, err := cl.Tags("chryscloud/chrysedgeproxy")
+```
+
+
+
 # Contributing
 
 Please read `CONTRIBUTING.md` for details on our code of conduct, and the process of submitting pull requests to us. 
