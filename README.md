@@ -579,6 +579,7 @@ ImageRemove(imageID string) ([]types.ImageDelete, error)
 VolumesPrune(pruneFilter filters.Args) (*types.VolumesPruneReport, error)
 GetDockerClient() *client.Client
 CalculateStats(jsonStats *types.StatsJSON) *models.Stats
+ContainerReplace(containerID) error
 ```
 
 ## Listing all tag versions from DockerHub

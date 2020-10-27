@@ -529,6 +529,109 @@ func (cl *Client) CalculateStats(jsonStats *types.StatsJSON) *models.Stats {
 	return stats
 }
 
+func (cl *Client) ContainerReplace(containerID string, image string, tag string) error {
+
+	originalContainer, err := cl.ContainerGet(containerID)
+	if err != nil {
+		if cl.log != nil {
+			cl.log.Error("failed to get container with id", containerID, err)
+		}
+		return err
+	}
+
+	originalContainerName := originalContainer.Name
+	tempContainerName := originalContainerName + "_temp"
+	rErr := cl.ContainerRename(originalContainer.ID, tempContainerName)
+	if rErr != nil {
+		return rErr
+	}
+
+	originalConf := originalContainer.Config
+	// replace image with the new image
+	originalConf.Image = image + ":" + tag
+
+	newlyCreatedContainer, ccErr := cl.ContainerCreate(originalContainerName, originalConf, originalContainer.HostConfig, nil)
+	if ccErr != nil {
+		// revert renaming back the old container
+		rbErr := cl.ContainerRename(containerID, originalContainerName)
+		if rbErr != nil {
+			return rbErr
+		}
+		if cl.log != nil {
+			cl.log.Error("failed to create a new container with original name", originalContainerName, ccErr)
+		}
+		return ccErr
+	}
+
+	sErr := cl.ContainerStart(newlyCreatedContainer.ID)
+	if sErr != nil {
+		if cl.log != nil {
+			cl.log.Error("failed to start newly created container", originalContainerName, newlyCreatedContainer.ID, sErr)
+		}
+		// undo previous changes to origial container and remove newly created container
+		cerr := cl.ContainerRename(containerID, originalContainerName)
+		cerr = cl.ContainerRemove(newlyCreatedContainer.ID)
+		if cerr != nil {
+			return cerr
+		}
+
+		return sErr
+	}
+
+	// removing old container
+	killAfter := time.Second * 5
+	stopErr := cl.ContainerStop(containerID, &killAfter)
+	if stopErr != nil {
+		if cl.log != nil {
+			cl.log.Error("failed to stop old container", containerID, stopErr)
+		}
+		return stopErr
+	}
+
+	_, remErr := cl.ContainersPrune(filters.NewArgs())
+	if remErr != nil {
+		if cl.log != nil {
+			cl.log.Error("failed to remove old container", containerID, remErr)
+		}
+		return remErr
+	}
+
+	return nil
+}
+
+// ContainerRemove - removing the container. timeout in 10 seconds, force removing all
+func (cl *Client) ContainerRemove(containerID string) error {
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	remErr := cl.client.ContainerRemove(ctx, containerID, types.ContainerRemoveOptions{Force: true, RemoveVolumes: true, RemoveLinks: true})
+	if remErr != nil {
+		if cl.log != nil {
+			cl.log.Error("failed to remove old container", containerID, remErr)
+		}
+		return remErr
+	}
+	return nil
+}
+
+// replaceRevert reverts the phases done by ContainerReplace function in case of errors
+func (cl *Client) ContainerRename(containerID string, newContainerName string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	// revert renaming back
+	rbErr := cl.client.ContainerRename(ctx, containerID, newContainerName)
+	if rbErr != nil {
+		if cl.log != nil {
+			cl.log.Error("failed to rename old container back", newContainerName, rbErr)
+		}
+		return rbErr
+	}
+
+	return nil
+}
+
 func calculateBlockIO(blkio types.BlkioStats) (blkRead uint64, blkWrite uint64) {
 	for _, bioEntry := range blkio.IoServiceBytesRecursive {
 		switch strings.ToLower(bioEntry.Op) {

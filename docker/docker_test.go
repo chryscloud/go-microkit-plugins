@@ -16,6 +16,8 @@ package docker
 
 import (
 	"io/ioutil"
+	"strings"
+	"testing"
 
 	mclog "github.com/chryscloud/go-microkit-plugins/log"
 )
@@ -31,6 +33,23 @@ var (
 	certKey, _ = ioutil.ReadFile("/media/igor/ubuntu/Nextcloud/Documents/Cocooncam/conffiles/development/docker-keys/docker-client-key.pem")
 	cert, _    = ioutil.ReadFile("/media/igor/ubuntu/Nextcloud/Documents/Cocooncam/conffiles/development/docker-keys/docker-client-cert.pem")
 )
+
+func TestContainerReplace(t *testing.T) {
+	cl := NewSocketClient(Log(zl), Host("unix:///var/run/docker.sock"))
+	containers, err := cl.ContainersList()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, cont := range containers {
+		img := cont.Image
+		if strings.Contains(img, "chryscloud/chrysedgeproxy:0.0.2") {
+			err := cl.ContainerReplace(cont.ID, "chryscloud/chrysedgeproxy", "0.0.4")
+			if err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+}
 
 //TODO: tests need to be modified to run without actual docker config
 // func TestSocketClient(t *testing.T) {

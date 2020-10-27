@@ -48,4 +48,7 @@ type Docker interface {
 	VolumesPrune(pruneFilter filters.Args) (*types.VolumesPruneReport, error)
 	GetDockerClient() *client.Client
 	CalculateStats(jsonStats *types.StatsJSON) *models.Stats
+	ContainerRemove(containerID string) error
+	ContainerRename(containerID string, newContainerName string) error
+	ContainerReplace(containerID string, image string, tag string) error
 }
