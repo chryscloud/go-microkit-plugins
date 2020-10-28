@@ -596,7 +596,7 @@ func (cl *Client) ContainerReplace(containerID string, image string, tag string)
 		return sErr
 	}
 
-	_, remErr := cl.ContainersPrune(filters.NewArgs())
+	remErr := cl.ContainerRemove(containerID)
 	if remErr != nil {
 		if cl.log != nil {
 			cl.log.Error("failed to remove old container", containerID, remErr)
@@ -613,7 +613,7 @@ func (cl *Client) ContainerRemove(containerID string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	remErr := cl.client.ContainerRemove(ctx, containerID, types.ContainerRemoveOptions{Force: true, RemoveVolumes: true, RemoveLinks: true})
+	remErr := cl.client.ContainerRemove(ctx, containerID, types.ContainerRemoveOptions{Force: true, RemoveVolumes: true})
 	if remErr != nil {
 		if cl.log != nil {
 			cl.log.Error("failed to remove old container", containerID, remErr)
