@@ -48,6 +48,7 @@ func TestContainerReplace(t *testing.T) {
 				t.Fatal(err)
 			}
 		}
+		break
 	}
 }
 

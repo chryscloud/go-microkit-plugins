@@ -539,10 +539,26 @@ func (cl *Client) ContainerReplace(containerID string, image string, tag string)
 		return err
 	}
 
+	// stopping old container
+	killAfter := time.Second * 5
+	stopErr := cl.ContainerStop(containerID, &killAfter)
+	if stopErr != nil {
+		if cl.log != nil {
+			cl.log.Error("failed to stop old container", containerID, stopErr)
+		}
+		return stopErr
+	}
+
 	originalContainerName := originalContainer.Name
 	tempContainerName := originalContainerName + "_temp"
 	rErr := cl.ContainerRename(originalContainer.ID, tempContainerName)
 	if rErr != nil {
+		sErr := cl.ContainerStart(originalContainer.ID)
+		if sErr != nil {
+			if cl.log != nil {
+				cl.log.Error("failed to start an old container back up after failing to rename", sErr)
+			}
+		}
 		return rErr
 	}
 
@@ -554,6 +570,7 @@ func (cl *Client) ContainerReplace(containerID string, image string, tag string)
 	if ccErr != nil {
 		// revert renaming back the old container
 		rbErr := cl.ContainerRename(containerID, originalContainerName)
+		rbErr = cl.ContainerStart(containerID)
 		if rbErr != nil {
 			return rbErr
 		}
@@ -570,22 +587,13 @@ func (cl *Client) ContainerReplace(containerID string, image string, tag string)
 		}
 		// undo previous changes to origial container and remove newly created container
 		cerr := cl.ContainerRename(containerID, originalContainerName)
+		cerr = cl.ContainerStart(containerID)
 		cerr = cl.ContainerRemove(newlyCreatedContainer.ID)
 		if cerr != nil {
 			return cerr
 		}
 
 		return sErr
-	}
-
-	// removing old container
-	killAfter := time.Second * 5
-	stopErr := cl.ContainerStop(containerID, &killAfter)
-	if stopErr != nil {
-		if cl.log != nil {
-			cl.log.Error("failed to stop old container", containerID, stopErr)
-		}
-		return stopErr
 	}
 
 	_, remErr := cl.ContainersPrune(filters.NewArgs())
