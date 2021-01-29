@@ -640,6 +640,27 @@ func (cl *Client) ContainerRename(containerID string, newContainerName string) e
 	return nil
 }
 
+func (cl *Client) SystemWideInfo() (types.Info, types.DiskUsage, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	info, err := cl.client.Info(ctx)
+	if err != nil {
+		if cl.log != nil {
+			cl.log.Error("failed to retrieve docker info", err)
+		}
+		return types.Info{}, types.DiskUsage{}, err
+	}
+	diskUsage, err := cl.client.DiskUsage(ctx)
+	if err != nil {
+		if cl.log != nil {
+			cl.log.Error("failed to retrieve docker info", err)
+		}
+		return types.Info{}, types.DiskUsage{}, err
+	}
+	return info, diskUsage, nil
+}
+
 func calculateBlockIO(blkio types.BlkioStats) (blkRead uint64, blkWrite uint64) {
 	for _, bioEntry := range blkio.IoServiceBytesRecursive {
 		switch strings.ToLower(bioEntry.Op) {

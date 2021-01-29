@@ -51,4 +51,7 @@ type Docker interface {
 	ContainerRemove(containerID string) error
 	ContainerRename(containerID string, newContainerName string) error
 	ContainerReplace(containerID string, image string, tag string) error
+
+	// host system information
+	SystemWideInfo() (types.Info, types.DiskUsage, error)
 }

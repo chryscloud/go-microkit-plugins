@@ -15,11 +15,13 @@
 package docker
 
 import (
+	"fmt"
 	"io/ioutil"
 	"strings"
 	"testing"
 
 	mclog "github.com/chryscloud/go-microkit-plugins/log"
+	"github.com/docker/docker/api/types"
 )
 
 var (
@@ -49,6 +51,70 @@ func TestContainerReplace(t *testing.T) {
 			}
 		}
 		break
+	}
+}
+
+func TestSystemWideInfo(t *testing.T) {
+	cl := NewSocketClient(Log(zl), Host("unix:///var/run/docker.sock"))
+	systemInfo, diskUsage, err := cl.SystemWideInfo()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fmt.Printf("Container running: %v\n", systemInfo.ContainersRunning)
+	fmt.Printf("Container paused: %v\n", systemInfo.ContainersPaused)
+	fmt.Printf("Container stopped: %v\n", systemInfo.ContainersStopped)
+	fmt.Printf("Containers total: %v\n", systemInfo.Containers)
+
+	imgNum := len(diskUsage.Images)
+	totalImgSize := int64(0)
+	activeImages := int64(0)
+	for _, im := range diskUsage.Images {
+		activeImages += im.Containers
+		totalImgSize += im.SharedSize
+	}
+	containerTotalSize := int64(0)
+	for _, c := range diskUsage.Containers {
+		containerTotalSize += c.SizeRw
+	}
+	totalVolumeSize := int64(0)
+	activeVolumes := int64(0)
+	for _, v := range diskUsage.Volumes {
+		activeVolumes += v.UsageData.RefCount
+		totalVolumeSize += v.UsageData.Size
+	}
+	fmt.Printf("disk size images: %v, size: %v, active images: %v\n", imgNum, totalImgSize, activeImages)
+	fmt.Printf("Containers total disk size: %v, volume size: %v, Active volumes: %v\n", containerTotalSize, totalVolumeSize, activeVolumes)
+
+	opts := types.ContainerListOptions{
+		All:   true,
+		Size:  true,
+		Quiet: false,
+	}
+	containers, err := cl.ContainersListWithOptions(opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, c := range containers {
+		if len(c.Names) > 0 {
+			skip := false
+			for _, n := range c.Names {
+				if strings.Contains(n, "chrysedgeportal") || strings.Contains(n, "chrysedgeserver") || strings.Contains(n, "redis") {
+					skip = true
+				}
+			}
+			if skip {
+				continue
+			}
+			stats, err := cl.ContainerStats(c.ID)
+			if err != nil {
+				t.Fatal(err)
+			}
+			calculated := cl.CalculateStats(stats)
+			calculated.Status = c.Status
+			calculated.State = c.State
+			fmt.Printf("Stats: %v\n", calculated)
+		}
 	}
 }
 
