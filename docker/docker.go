@@ -348,7 +348,7 @@ func (cl *Client) ContainerLogsStream(containerID string, output chan []byte, do
 func (cl *Client) ContainerCreate(name string, config *container.Config, hostConfig *container.HostConfig, networkConfig *network.NetworkingConfig) (*container.ContainerCreateCreatedBody, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	body, err := cl.client.ContainerCreate(ctx, config, hostConfig, networkConfig, name)
+	body, err := cl.client.ContainerCreate(ctx, config, hostConfig, networkConfig, nil, name)
 	if err != nil {
 		return nil, err
 	}
@@ -471,7 +471,7 @@ func (cl *Client) ImagePullDockerHub(image, tag string, username, password strin
 }
 
 // ImageRemove - removes an image by force and prunes its children
-func (cl *Client) ImageRemove(imageID string) ([]types.ImageDelete, error) {
+func (cl *Client) ImageRemove(imageID string) ([]types.ImageDeleteResponseItem, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
 

@@ -44,7 +44,7 @@ type Docker interface {
 	ContainerStats(containerID string) (*types.StatsJSON, error)
 	ImagesList() ([]types.ImageSummary, error)
 	ImagePullDockerHub(image, tag string, username, password string) (string, error)
-	ImageRemove(imageID string) ([]types.ImageDelete, error)
+	ImageRemove(imageID string) ([]types.ImageDeleteResponseItem, error)
 	VolumesPrune(pruneFilter filters.Args) (*types.VolumesPruneReport, error)
 	GetDockerClient() *client.Client
 	CalculateStats(jsonStats *types.StatsJSON) *models.Stats

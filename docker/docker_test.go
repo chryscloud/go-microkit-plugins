@@ -118,6 +118,11 @@ func TestSystemWideInfo(t *testing.T) {
 	}
 }
 
+func TestDockerPullImage(t *testing.T) {
+	cl := NewSocketClient(Log(zl), Host("unix:///var/run/docker.sock"))
+	cl.ImagePullDockerHub("chryscloud/chrysedgeserver", "0.0.8-arm64v8", "", "")
+}
+
 //TODO: tests need to be modified to run without actual docker config
 // func TestSocketClient(t *testing.T) {
 // 	cl := NewSocketClient(Log(zl), Host("unix:///var/run/docker.sock"))
